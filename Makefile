@@ -3,9 +3,17 @@
 build:
 	docker build -t calculator-app .
 	docker build -t calc-web ./web
+	docker build -t jenkins-agent ./jenkins/agent
 
 server:
-	docker run --rm --name apiserver --network-alias apiserver --env PYTHONPATH=/opt/calc --env FLASK_APP=app/api.py -p 5000:5000 -w /opt/calc calculator-app:latest flask run --host=0.0.0.0
+	docker run --rm --name apiserver --network apiserver --env PYTHONPATH=/opt/calc --env FLASK_APP=app/api.py -p 5000:5000 -w /opt/calc calculator-app:latest flask run --host=0.0.0.0
+
+create-jenkins-agent:
+	docker run -d --name jenkins-agent --restart=unless-stopped -v /home/frobledillo/Documents/MASTER/CICD/Actividad3/unir-cicd/jenkins:/workspace jenkins-agent
+
+stop-jenkins-agent:
+	docker stop jenkins-agent
+	docker rm --force jenkins-agent
 
 test-unit:
 	docker run --name unit-tests --env PYTHONPATH=/opt/calc -w /opt/calc calculator-app:latest pytest --cov --cov-report=xml:results/coverage.xml --cov-report=html:results/coverage --junit-xml=results/unit_result.xml -m unit || true

@@ -7,12 +7,14 @@ pipeline {
             steps {
                 echo 'Building stage!'
                 sh 'make build'
+                }
             }
         }
         stage('Unit tests') {
             steps {
                 sh 'make test-unit'
-                archiveArtifacts artifacts: 'results/*.xml'
+                archiveArtifacts artifacts: 'results/*.xml'                
+                }
             }
         }
     }
